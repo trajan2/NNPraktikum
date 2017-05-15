@@ -35,7 +35,7 @@ class Perceptron(Classifier):
     weight : list
     """
     def __init__(self, train, valid, test, 
-                                    learningRate=0.01, epochs=50):
+                                    learningRate=0.1, epochs=30):
 
         self.learningRate = learningRate
         self.epochs = epochs
@@ -45,20 +45,23 @@ class Perceptron(Classifier):
         self.testSet = test
 
         # Initialize the weight vector with small random values
-        # around 0 and0.1
+        # around 0 and 0.1
         self.weight = np.random.rand(self.trainingSet.input.shape[1])/100
 
     def train(self, verbose=True):
         """Train the perceptron with the perceptron learning algorithm.
-
+        
         Parameters
         ----------
         verbose : boolean
             Print logging messages with validation accuracy if verbose is True.
         """
-        
-        # Write your code to train the perceptron here
-        pass
+
+        for epoch in range(self.epochs):
+            for idx in range(len(self.trainingSet.input)):
+                out = int(self.fire(self.trainingSet.input[idx]))
+                err = self.trainingSet.label[idx] - out
+                self.updateWeights(self.trainingSet.input[idx], err)
 
     def classify(self, testInstance):
         """Classify a single instance.
@@ -73,7 +76,7 @@ class Perceptron(Classifier):
             True if the testInstance is recognized as a 7, False otherwise.
         """
         # Write your code to do the classification on an input image
-        pass
+        return self.fire(testInstance)
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
@@ -96,8 +99,16 @@ class Perceptron(Classifier):
 
     def updateWeights(self, input, error):
         # Write your code to update the weights of the perceptron here
-        pass
-         
+        """
+        Perceptron Learning Algorithm 
+        w_{ij}(k+1)=w_{ij}(k) bei korrekter Ausgabe,
+        w_{ij}(k+1)=w_{ij}(k)+\alpha x_{i} bei Ausgabe 0 und gewünschter Ausgabe 1 
+        w_{ij}(k+1)=w_{ij}(k)-\alpha x_{i} bei Ausgabe 1 und gewünschter Ausgabe 0
+
+        """
+
+        self.weight + error * self.learningRate*np.array(input)
+
     def fire(self, input):
         """Fire the output of the perceptron corresponding to the input """
         return Activation.sign(np.dot(np.array(input), self.weight))
